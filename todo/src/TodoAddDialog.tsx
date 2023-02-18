@@ -1,6 +1,5 @@
-import { FormEvent, useState } from "react";
+import { useState } from "react";
 import Button from "@mui/material/Button";
-import { Box } from "@mui/system";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
@@ -42,7 +41,6 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
       place: place,
       flag: flag,
       priority: priority,
-      isCompleted: false,
     };
 
     fetch("http://127.0.0.1:8000/api/todos/", {
@@ -69,7 +67,7 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
     <Dialog open={true} onClose={props.close}>
       <DialogTitle>新增待辦事項</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} sx={{marginTop: '5px'}}>
+        <Grid container spacing={2} sx={{ marginTop: "5px" }}>
           <Grid item xs={12}>
             <TextField
               label="標題"
@@ -81,59 +79,67 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
             />
           </Grid>
           <Grid item xs={6}>
-            <TextField
-              label="內容"
-              size="small"
-              value={content}
-              onChange={(e) => setContent(e.target.value)}
-              fullWidth
-            />
+            <Grid item xs={12}>
+              <TextField
+                label="內容"
+                size="small"
+                value={content}
+                onChange={(e) => setContent(e.target.value)}
+                fullWidth
+                multiline
+                rows="8"
+              />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="截止日"
-              size="small"
-              type="date"
-              value={due}
-              onChange={(e) => setDue(e.target.value)}
-              InputLabelProps={{ shrink: true }}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="地點"
-              size="small"
-              value={place}
-              onChange={(e) => setPlace(e.target.value)}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="標籤"
-              size="small"
-              value={flag}
-              onChange={(e) => setFlag(e.target.value)}
-              fullWidth
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <TextField
-              label="重要度"
-              size="small"
-              select
-              value={priority}
-              onChange={(e) => setProprity(e.target.value as Todo["priority"])}
-              defaultValue="Low"
-              fullWidth
-            >
-              {priorityOption.map((option) => (
-                <MenuItem key={option} value={option}>
-                  {option}
-                </MenuItem>
-              ))}
-            </TextField>
+          <Grid item container xs={6} spacing={2}>
+            <Grid item xs={12}>
+              <TextField
+                label="截止日"
+                size="small"
+                type="date"
+                value={due}
+                onChange={(e) => setDue(e.target.value)}
+                InputLabelProps={{ shrink: true }}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="地點"
+                size="small"
+                value={place}
+                onChange={(e) => setPlace(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="標籤"
+                size="small"
+                value={flag}
+                onChange={(e) => setFlag(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <TextField
+                label="重要度"
+                size="small"
+                select
+                value={priority}
+                onChange={(e) =>
+                  setProprity(e.target.value as Todo["priority"])
+                }
+                defaultValue="Low"
+                fullWidth
+              >
+                {priorityOption.map((option) => (
+                  <MenuItem key={option} value={option}>
+                    {option}
+                  </MenuItem>
+                ))}
+              </TextField>
+            </Grid>
           </Grid>
         </Grid>
       </DialogContent>
