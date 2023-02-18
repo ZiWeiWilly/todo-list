@@ -20,7 +20,7 @@ module.exports = {
     ],
   },
   output: {
-    path: path.resolve(__dirname, '..', './build'),
+    path: path.resolve(__dirname, '..', './frontend/static/frontend/'),
     filename: 'bundle.js',
   },
   plugins: [
