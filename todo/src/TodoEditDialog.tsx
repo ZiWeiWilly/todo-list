@@ -62,7 +62,7 @@ export const TodoEditDialog = (props: TodoEditDialogProps) => {
     <Dialog open={true} onClose={handleCancel}>
       <DialogTitle>編輯待辦事項</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{marginTop: '5px'}}>
           <Grid item xs={12}>
             <TextField
               label="標題"
@@ -130,8 +130,8 @@ export const TodoEditDialog = (props: TodoEditDialogProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleSave}>Save</Button>
-        <Button onClick={handleCancel}>Cancel</Button>
+        <Button onClick={handleSave}>保存</Button>
+        <Button onClick={handleCancel}>取消</Button>
       </DialogActions>
     </Dialog>
   );

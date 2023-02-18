@@ -69,7 +69,7 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
     <Dialog open={true} onClose={props.close}>
       <DialogTitle>新增待辦事項</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2}>
+        <Grid container spacing={2} sx={{marginTop: '5px'}}>
           <Grid item xs={12}>
             <TextField
               label="標題"
@@ -138,9 +138,9 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
         </Grid>
       </DialogContent>
       <DialogActions>
-        <Button onClick={() => handleSave(true)}>Save & Create Another</Button>
-        <Button onClick={() => handleSave()}>Save</Button>
-        <Button onClick={props.close}>Cancel</Button>
+        <Button onClick={() => handleSave(true)}>保存 & 繼續新增</Button>
+        <Button onClick={() => handleSave()}>保存</Button>
+        <Button onClick={props.close}>取消</Button>
       </DialogActions>
     </Dialog>
   );

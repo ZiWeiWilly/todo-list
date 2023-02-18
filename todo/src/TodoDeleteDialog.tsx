@@ -35,8 +35,8 @@ export const TodoDeleteDialog = (props: TodoDelteDialog) => {
         <DialogContentText>確定要刪除待辦事項嗎？</DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button onClick={handleConfirm}>Confirm</Button>
-        <Button onClick={props.close}>Cancel</Button>
+        <Button onClick={handleConfirm}>確定</Button>
+        <Button onClick={props.close}>取消</Button>
       </DialogActions>
     </Dialog>
   );

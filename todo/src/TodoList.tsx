@@ -1,4 +1,4 @@
-import { CSSProperties, useEffect, useState } from "react";
+import { ChangeEvent, CSSProperties, useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 
 import { Todo } from "./todo.types";
@@ -19,22 +19,41 @@ import Button from "@mui/material/Button";
 import RefreshIcon from "@mui/icons-material/Refresh";
 import { TodoEditDialog } from "./TodoEditDialog";
 import { TodoDeleteDialog } from "./TodoDeleteDialog";
+import Tooltip from "@mui/material/Tooltip";
+import MenuItem from "@mui/material/MenuItem";
+import TextField from "@mui/material/TextField";
+
+const styleAlignItems: CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  marginBottom: "10px",
+};
+
+const sortBy = [
+  {
+    text: "建立日期 - 舊到新",
+    value: "id",
+  },
+  {
+    text: "建立日期 - 新到舊",
+    value: "-id",
+  },
+  {
+    text: "逾期日期",
+    value: "due",
+  },
+];
 
 export const TodoList = () => {
-  const styleAlignItems: CSSProperties = {
-    display: "flex",
-    alignItems: "center",
-    marginBottom: "10px",
-  };
-
   const [todoItems, setTodoItems] = useState<Todo[]>([] as Todo[]);
   const [showButtons, setShowButtons] = useState<Boolean[]>([] as Boolean[]);
   const [showAddDialog, setShowAddDialog] = useState(false);
   const [editItem, setEditItem] = useState<Todo | null>(null);
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
+  const [order, setOrder] = useState("id");
 
   const handleFetchTodoItem = () => {
-    fetch("http://127.0.0.1:8000/api/todos/", {
+    fetch(`http://127.0.0.1:8000/api/todos/?ordering=${order}`, {
       method: "GET",
       headers: new Headers({
         Accept: "application/json",
@@ -56,51 +75,87 @@ export const TodoList = () => {
     setShowButtons(curShowButtons);
   };
 
-  const accordionBorder = (due: string): CSSProperties => {
-    const dateDue = new Date(due).getDate();
-    const dateToday = new Date().getDate();
-    if (dateDue === dateToday) {
-      return {
-        backgroundColor: "#fff4e5",
-      };
-    } else if (dateDue < dateToday) {
-      return {
-        backgroundColor: "#fdeded",
-      };
-    }
+  const handleOrderChange = (event: ChangeEvent<HTMLInputElement>) => {
+    setOrder(event.target.value);
+    handleFetchTodoItem();
+  };
 
-    return {};
+  const dateCompareWithNow = (due: string): string => {
+    const dateDue = new Date(due);
+    const dateNow = new Date();
+    console.log(dateDue, dateNow);
+
+    if (dateDue.getFullYear() < dateNow.getFullYear()) {
+      return "Over Due";
+    } else if (dateDue.getFullYear() > dateNow.getFullYear()) {
+      return "Not Due";
+    } else {
+      if (dateDue.getDate() === dateNow.getDate()) {
+        return "On Due";
+      } else if (dateDue.getDate() < dateNow.getDate()) {
+        return "Over Due";
+      } else {
+        return "Not Due";
+      }
+    }
+  };
+
+  const accordionBorder = (due: string): CSSProperties => {
+    switch (dateCompareWithNow(due)) {
+      case "On Due":
+        return {
+          backgroundColor: "#fff4e5",
+        };
+      case "Over Due":
+        return {
+          backgroundColor: "#fdeded",
+        };
+      default:
+        return {};
+    }
   };
 
   const dueStyle = (due: string): CSSProperties => {
-    const dateDue = new Date(due).getDate();
-    const dateToday = new Date().getDate();
-    if (dateDue === dateToday) {
-      return {
-        color: "#ed6c02",
-      };
-    } else if (dateDue < dateToday) {
-      return {
-        color: "#d32f2f",
-      };
+    switch (dateCompareWithNow(due)) {
+      case "On Due":
+        return {
+          color: "#ed6c02",
+        };
+      case "Over Due":
+        return {
+          color: "#d32f2f",
+        };
+      default:
+        return {};
     }
-
-    return {};
   };
 
   useEffect(() => {
     handleFetchTodoItem();
-  }, []);
+  }, [editItem, deleteItemId, order]);
 
   return (
     <>
       <Container maxWidth="md">
         <h3>
           待辦事項
-          <IconButton onClick={handleFetchTodoItem}>
-            <RefreshIcon />
-          </IconButton>
+          <Tooltip title="Refresh" placement="top" arrow>
+            <IconButton onClick={handleFetchTodoItem}>
+              <RefreshIcon />
+            </IconButton>
+          </Tooltip>
         </h3>
+        <TextField
+          label="排序"
+          value={order}
+          select
+          onChange={handleOrderChange}
+          sx={{ marginBottom: "5px" }}
+        >
+          {sortBy.map((o) => (
+            <MenuItem value={o.value}>{o.text}</MenuItem>
+          ))}
+        </TextField>
         {todoItems.map((todo, index) => (
           <div
             key={index}
@@ -125,7 +180,7 @@ export const TodoList = () => {
                     }}
                   >
                     <div>{todo.title}</div>
-                    <div style={dueStyle(todo.due)}>{todo.due}</div>
+                    <div style={dueStyle(todo.due)}>Due Date: {todo.due}</div>
                   </Typography>
                 </AccordionSummary>
                 <AccordionDetails>
@@ -141,8 +196,7 @@ export const TodoList = () => {
                         <FlagIcon sx={{ marginRight: "10px" }} /> {todo.flag}
                       </div>
                       <div style={styleAlignItems}>
-                        <ListIcon sx={{ marginRight: "10px" }} />{" "}
-                        {todo.priority}
+                        <ListIcon sx={{ marginRight: "10px" }} /> {todo.priority}
                       </div>
                     </Grid>
                   </Grid>
@@ -150,18 +204,16 @@ export const TodoList = () => {
               </Accordion>
               {showButtons[index] ? (
                 <>
-                  <IconButton
-                    aria-label="edit"
-                    onClick={() => setEditItem(todo)}
-                  >
-                    <EditIcon />
-                  </IconButton>
-                  <IconButton
-                    aria-label="delete"
-                    onClick={() => setDeleteItemId(todo.id)}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
+                  <Tooltip title="Edit" placement="top" arrow>
+                    <IconButton onClick={() => setEditItem(todo)}>
+                      <EditIcon />
+                    </IconButton>
+                  </Tooltip>
+                  <Tooltip title="Delete" placement="top" arrow>
+                    <IconButton onClick={() => setDeleteItemId(todo.id)}>
+                      <DeleteIcon />
+                    </IconButton>
+                  </Tooltip>
                 </>
               ) : (
                 <></>
