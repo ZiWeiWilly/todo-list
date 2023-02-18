@@ -12,12 +12,16 @@ import DialogActions from "@mui/material/DialogActions";
 const priorityOption = ["Low", "Middle", "High"];
 
 type TodoEditDialogProps = {
-  editTodoItem: Todo;
+  editTodoItem: Todo | null;
   refresh: () => void;
   close: () => void;
 };
 
 export const TodoEditDialog = (props: TodoEditDialogProps) => {
+  if (props.editTodoItem === null) {
+    return null
+  }
+
   const [title, setTitle] = useState(props.editTodoItem.title);
   const [content, setContent] = useState(props.editTodoItem.content);
   const [due, setDue] = useState(props.editTodoItem.due);
@@ -37,7 +41,7 @@ export const TodoEditDialog = (props: TodoEditDialogProps) => {
       priority: priority,
     };
 
-    fetch(`http://127.0.0.1:8000/api/todos/${props.editTodoItem.id}/update/`, {
+    fetch(`http://127.0.0.1:8000/api/todos/${props.editTodoItem?.id}/update/`, {
       method: "PATCH",
       headers: new Headers({
         Accept: "application/json",

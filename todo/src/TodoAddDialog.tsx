@@ -12,11 +12,16 @@ import DialogActions from "@mui/material/DialogActions";
 const priorityOption = ["Low", "Middle", "High"];
 
 type TodoAddDialogProps = {
+  show: boolean;
   refresh: () => void;
   close: () => void;
 };
 
 export const TodoAddDialog = (props: TodoAddDialogProps) => {
+  if (!props.show) {
+    return null
+  }
+
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [due, setDue] = useState("");

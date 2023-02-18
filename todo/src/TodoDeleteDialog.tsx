@@ -6,12 +6,16 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 
 type TodoDelteDialog = {
-  itemId: number;
+  itemId: number | null;
   close: () => void;
   refresh: () => void;
 };
 
 export const TodoDeleteDialog = (props: TodoDelteDialog) => {
+  if (props.itemId === null) {
+    return null
+  }
+
   const handleConfirm = () => {
     fetch(`http://127.0.0.1:8000/api/todos/${props.itemId}/delete/`, {
       method: "DELETE",

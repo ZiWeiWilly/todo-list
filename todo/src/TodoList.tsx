@@ -239,38 +239,21 @@ export const TodoList = () => {
           新增
         </Button>
       </Container>
-      {showAddDialog ? (
-        <>
-          <TodoAddDialog
-            close={() => setShowAddDialog(false)}
-            refresh={handleFetchTodoItem}
-          />
-        </>
-      ) : (
-        <></>
-      )}
-      {editItem ? (
-        <>
-          <TodoEditDialog
-            editTodoItem={editItem}
-            close={() => setEditItem(null)}
-            refresh={handleFetchTodoItem}
-          />
-        </>
-      ) : (
-        <></>
-      )}
-      {deleteItemId ? (
-        <>
-          <TodoDeleteDialog
-            itemId={deleteItemId}
-            close={() => setDeleteItemId(null)}
-            refresh={handleFetchTodoItem}
-          />
-        </>
-      ) : (
-        <></>
-      )}
+      <TodoAddDialog
+        show={showAddDialog}
+        close={() => setShowAddDialog(false)}
+        refresh={handleFetchTodoItem}
+      />
+      <TodoEditDialog
+        editTodoItem={editItem}
+        close={() => setEditItem(null)}
+        refresh={handleFetchTodoItem}
+      />
+      <TodoDeleteDialog
+        itemId={deleteItemId}
+        close={() => setDeleteItemId(null)}
+        refresh={handleFetchTodoItem}
+      />
     </>
   );
 };
