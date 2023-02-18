@@ -57,6 +57,38 @@ export const TodoList = () => {
         setShowButtons(curShowButtons)
     }
 
+    const accordionBorder = (due: string): CSSProperties => {
+        const dateDue = new Date(due).getDate()
+        const dateToday = new Date().getDate()
+        if (dateDue === dateToday) {
+            return {
+                backgroundColor: '#fff4e5'
+            }
+        } else if (dateDue < dateToday) {
+            return {
+                backgroundColor: '#fdeded'
+            }
+        }
+
+        return {}
+    }
+
+    const dueStyle = (due: string): CSSProperties => {
+        const dateDue = new Date(due).getDate()
+        const dateToday = new Date().getDate()
+        if (dateDue === dateToday) {
+            return {
+                color: '#ed6c02',
+            }
+        } else if (dateDue < dateToday) {
+            return {
+                color: '#d32f2f'
+            }
+        }
+
+        return {}
+    }
+
     useEffect(() => {
         handleFetchTodoItem()
     },[])
@@ -77,11 +109,14 @@ export const TodoList = () => {
                         onMouseLeave={() => handleHover(false, index)}
                     >
                         <Typography sx={{display: 'flex', alignItems: 'center'}}>
-                            <Accordion sx={{flex: '1', marginRight: '10px', marginBottom: '1px'}}>
+                            <Accordion 
+                                style={accordionBorder(todo.due)} 
+                                sx={{flex: '1', marginRight: '10px', marginBottom: '5px !important'}}
+                            >
                                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                                     <Typography sx={{display: 'flex', justifyContent: 'space-between', width: '100%'}}>
                                         <div>{todo.title}</div>
-                                        <div>{todo.due}</div>
+                                        <div style={dueStyle(todo.due)}>{todo.due}</div>
                                     </Typography>
                                 </AccordionSummary>
                                 <AccordionDetails>
