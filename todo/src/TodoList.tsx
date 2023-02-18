@@ -83,7 +83,6 @@ export const TodoList = () => {
   const dateCompareWithNow = (due: string): string => {
     const dateDue = new Date(due);
     const dateNow = new Date();
-    console.log(dateDue, dateNow);
 
     if (dateDue.getFullYear() < dateNow.getFullYear()) {
       return "Over Due";
@@ -156,28 +155,35 @@ export const TodoList = () => {
             <MenuItem value={o.value}>{o.text}</MenuItem>
           ))}
         </TextField>
-        {todoItems.map((todo, index) => (
-          <div
-            key={index}
-            onMouseEnter={() => handleHover(true, index)}
-            onMouseLeave={() => handleHover(false, index)}
-          >
-            <Typography sx={{ display: "flex", alignItems: "center" }}>
+        <div
+          style={{
+            minHeight: "60px",
+            maxHeight: "65vh",
+            overflowY: "auto",
+            border: "1px solid lightgrey",
+            padding: "15px",
+          }}
+        >
+          {todoItems.map((todo, index) => (
+            <Typography
+              key={index}
+              onMouseEnter={() => handleHover(true, index)}
+              onMouseLeave={() => handleHover(false, index)}
+              display="flex"
+              alignItems="center"
+            >
               <Accordion
                 style={accordionBorder(todo.due)}
                 sx={{
                   flex: "1",
-                  marginRight: "10px",
                   marginBottom: "5px !important",
                 }}
               >
                 <AccordionSummary expandIcon={<ExpandMoreIcon />}>
                   <Typography
-                    sx={{
-                      display: "flex",
-                      justifyContent: "space-between",
-                      width: "100%",
-                    }}
+                    display="flex"
+                    justifyContent="space-between"
+                    width="100%"
                   >
                     <div>{todo.title}</div>
                     <div style={dueStyle(todo.due)}>Due Date: {todo.due}</div>
@@ -196,7 +202,8 @@ export const TodoList = () => {
                         <FlagIcon sx={{ marginRight: "10px" }} /> {todo.flag}
                       </div>
                       <div style={styleAlignItems}>
-                        <ListIcon sx={{ marginRight: "10px" }} /> {todo.priority}
+                        <ListIcon sx={{ marginRight: "10px" }} />{" "}
+                        {todo.priority}
                       </div>
                     </Grid>
                   </Grid>
@@ -205,7 +212,10 @@ export const TodoList = () => {
               {showButtons[index] ? (
                 <>
                   <Tooltip title="Edit" placement="top" arrow>
-                    <IconButton onClick={() => setEditItem(todo)}>
+                    <IconButton
+                      onClick={() => setEditItem(todo)}
+                      sx={{ marginLeft: "10px" }}
+                    >
                       <EditIcon />
                     </IconButton>
                   </Tooltip>
@@ -219,8 +229,8 @@ export const TodoList = () => {
                 <></>
               )}
             </Typography>
-          </div>
-        ))}
+          ))}
+        </div>
         <Button
           variant="outlined"
           onClick={() => setShowAddDialog(true)}
