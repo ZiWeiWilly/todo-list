@@ -1,5 +1,4 @@
-export type Todo = {
-  id: number;
+export type InitTodo = {
   title: string;
   content: string;
   due: string;
@@ -8,3 +7,5 @@ export type Todo = {
   priority: "Low" | "Middle" | "High";
   isCompleted: boolean;
 };
+
+export type Todo = InitTodo & {id: number}

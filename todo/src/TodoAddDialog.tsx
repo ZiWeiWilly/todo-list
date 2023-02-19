@@ -1,15 +1,25 @@
-import { useState } from "react";
+import { ChangeEvent, useState } from "react";
 import Button from "@mui/material/Button";
 import TextField from "@mui/material/TextField";
 import Grid from "@mui/material/Grid";
 import MenuItem from "@mui/material/MenuItem";
-import { Todo } from "./todo.types";
+import { InitTodo, Todo } from "./todo.types";
 import DialogTitle from "@mui/material/DialogTitle";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 import DialogActions from "@mui/material/DialogActions";
 
 const priorityOption = ["Low", "Middle", "High"];
+
+const initTodoItem: InitTodo = {
+  title: '',
+  content: '',
+  due: '',
+  place: '',
+  flag: '',
+  priority: 'Low',
+  isCompleted: false
+}
 
 type TodoAddDialogProps = {
   show: boolean;
@@ -21,32 +31,15 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
   if (!props.show) {
     return null
   }
+  
+  const [todoItem, setTodoItem] = useState<InitTodo>(initTodoItem);
 
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
-  const [due, setDue] = useState("");
-  const [place, setPlace] = useState("");
-  const [flag, setFlag] = useState("");
-  const [priority, setProprity] = useState<Todo["priority"]>("Low");
-
-  const resetAddition = () => {
-    setTitle("");
-    setContent("");
-    setDue("");
-    setPlace("");
-    setFlag("");
-    setProprity("Low");
-  };
+  const handleChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setTodoItem(prev => ({...prev, [e.target.name]: e.target.value}));
+  }
 
   const handleSave = (createNext: boolean = false) => {
-    const body = {
-      title: title,
-      content: content,
-      due: due,
-      place: place,
-      flag: flag,
-      priority: priority,
-    };
+    const body = todoItem;
 
     fetch("http://127.0.0.1:8000/api/todos/", {
       method: "POST",
@@ -62,7 +55,7 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
       .catch((error) => console.log("error", error));
 
     if (createNext) {
-      resetAddition();
+      setTodoItem(initTodoItem);
     } else {
       props.close();
     }
@@ -72,13 +65,14 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
     <Dialog open={true} onClose={props.close}>
       <DialogTitle>新增待辦事項</DialogTitle>
       <DialogContent>
-        <Grid container spacing={2} sx={{ marginTop: "5px" }}>
+      <Grid container spacing={2} sx={{ marginTop: "5px" }}>
           <Grid item xs={12}>
             <TextField
               label="標題"
               size="small"
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
+              name="title"
+              value={todoItem.title}
+              onChange={handleChange}
               required
               fullWidth
             />
@@ -88,8 +82,9 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
               <TextField
                 label="內容"
                 size="small"
-                value={content}
-                onChange={(e) => setContent(e.target.value)}
+                name="content"
+                value={todoItem.content}
+                onChange={handleChange}
                 fullWidth
                 multiline
                 rows="8"
@@ -102,8 +97,9 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
                 label="截止日"
                 size="small"
                 type="date"
-                value={due}
-                onChange={(e) => setDue(e.target.value)}
+                name="due"
+                value={todoItem.due}
+                onChange={handleChange}
                 InputLabelProps={{ shrink: true }}
                 fullWidth
               />
@@ -112,8 +108,9 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
               <TextField
                 label="地點"
                 size="small"
-                value={place}
-                onChange={(e) => setPlace(e.target.value)}
+                name="place"
+                value={todoItem.place}
+                onChange={handleChange}
                 fullWidth
               />
             </Grid>
@@ -121,8 +118,9 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
               <TextField
                 label="標籤"
                 size="small"
-                value={flag}
-                onChange={(e) => setFlag(e.target.value)}
+                name="flag"
+                value={todoItem.flag}
+                onChange={handleChange}
                 fullWidth
               />
             </Grid>
@@ -131,10 +129,9 @@ export const TodoAddDialog = (props: TodoAddDialogProps) => {
                 label="重要度"
                 size="small"
                 select
-                value={priority}
-                onChange={(e) =>
-                  setProprity(e.target.value as Todo["priority"])
-                }
+                name="priority"
+                value={todoItem.priority}
+                onChange={handleChange}
                 defaultValue="Low"
                 fullWidth
               >
