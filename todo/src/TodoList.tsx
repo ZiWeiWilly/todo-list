@@ -22,6 +22,7 @@ import { TodoDeleteDialog } from "./TodoDeleteDialog";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
+import Paper from "@mui/material/Paper";
 
 const styleAlignItems: CSSProperties = {
   display: "flex",
@@ -80,7 +81,7 @@ export const TodoList = () => {
     handleFetchTodoItem();
   };
 
-  const dateCompareWithNow = (due: string): string => {
+  const dueDetermine = (due: string): string => {
     const dateDue = new Date(due);
     const dateNow = new Date();
 
@@ -99,8 +100,8 @@ export const TodoList = () => {
     }
   };
 
-  const accordionBorder = (due: string): CSSProperties => {
-    switch (dateCompareWithNow(due)) {
+  const accordionBackground = (due: string): CSSProperties => {
+    switch (dueDetermine(due)) {
       case "On Due":
         return {
           backgroundColor: "#fff4e5",
@@ -114,8 +115,8 @@ export const TodoList = () => {
     }
   };
 
-  const dueStyle = (due: string): CSSProperties => {
-    switch (dateCompareWithNow(due)) {
+  const dueColor = (due: string): CSSProperties => {
+    switch (dueDetermine(due)) {
       case "On Due":
         return {
           color: "#ed6c02",
@@ -136,108 +137,111 @@ export const TodoList = () => {
   return (
     <>
       <Container maxWidth="md">
-        <h3>
-          待辦事項
-          <Tooltip title="Refresh" placement="top" arrow>
-            <IconButton onClick={handleFetchTodoItem}>
-              <RefreshIcon />
-            </IconButton>
-          </Tooltip>
-        </h3>
-        <TextField
-          label="排序"
-          value={order}
-          select
-          onChange={handleOrderChange}
-          sx={{ marginBottom: "5px" }}
-        >
-          {sortBy.map((o) => (
-            <MenuItem value={o.value}>{o.text}</MenuItem>
-          ))}
-        </TextField>
-        <div
-          style={{
-            minHeight: "60px",
-            maxHeight: "65vh",
-            overflowY: "auto",
-            border: "1px solid lightgrey",
-            padding: "15px",
-          }}
-        >
-          {todoItems.map((todo, index) => (
-            <Typography
-              key={index}
-              onMouseEnter={() => handleHover(true, index)}
-              onMouseLeave={() => handleHover(false, index)}
-              display="flex"
-              alignItems="center"
-            >
-              <Accordion
-                style={accordionBorder(todo.due)}
-                sx={{
-                  flex: "1",
-                  marginBottom: "5px !important",
-                }}
+        <Paper elevation={3} sx={{ padding: "5px 15px 15px 15px" }}>
+          <h3>
+            待辦事項
+            <Tooltip title="Refresh" placement="top" arrow>
+              <IconButton onClick={handleFetchTodoItem}>
+                <RefreshIcon />
+              </IconButton>
+            </Tooltip>
+          </h3>
+          <TextField
+            label="排序"
+            value={order}
+            select
+            onChange={handleOrderChange}
+            sx={{ marginBottom: "5px" }}
+          >
+            {sortBy.map((o) => (
+              <MenuItem value={o.value}>{o.text}</MenuItem>
+            ))}
+          </TextField>
+          <div
+            style={{
+              minHeight: "60px",
+              maxHeight: "65vh",
+              overflowY: "auto",
+              border: "1px solid lightgrey",
+              padding: "15px",
+            }}
+          >
+            {todoItems.map((todo, index) => (
+              <Typography
+                key={index}
+                onMouseEnter={() => handleHover(true, index)}
+                onMouseLeave={() => handleHover(false, index)}
+                display="flex"
+                alignItems="center"
               >
-                <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                  <Typography
-                    display="flex"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <div>{todo.title}</div>
-                    <div style={dueStyle(todo.due)}>Due Date: {todo.due}</div>
-                  </Typography>
-                </AccordionSummary>
-                <AccordionDetails>
-                  <Grid container spacing={2}>
-                    <Grid item xs={6}>
-                      <div>{todo.content}</div>
-                    </Grid>
-                    <Grid item xs={6}>
-                      <div style={styleAlignItems}>
-                        <PlaceIcon sx={{ marginRight: "10px" }} /> {todo.place}
-                      </div>
-                      <div style={styleAlignItems}>
-                        <FlagIcon sx={{ marginRight: "10px" }} /> {todo.flag}
-                      </div>
-                      <div style={styleAlignItems}>
-                        <ListIcon sx={{ marginRight: "10px" }} />{" "}
-                        {todo.priority}
-                      </div>
-                    </Grid>
-                  </Grid>
-                </AccordionDetails>
-              </Accordion>
-              {showButtons[index] ? (
-                <>
-                  <Tooltip title="Edit" placement="top" arrow>
-                    <IconButton
-                      onClick={() => setEditItem(todo)}
-                      sx={{ marginLeft: "10px" }}
+                <Accordion
+                  style={accordionBackground(todo.due)}
+                  sx={{
+                    flex: "1",
+                    marginBottom: "5px !important",
+                  }}
+                >
+                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
+                    <Typography
+                      display="flex"
+                      justifyContent="space-between"
+                      width="100%"
                     >
-                      <EditIcon />
-                    </IconButton>
-                  </Tooltip>
-                  <Tooltip title="Delete" placement="top" arrow>
-                    <IconButton onClick={() => setDeleteItemId(todo.id)}>
-                      <DeleteIcon />
-                    </IconButton>
-                  </Tooltip>
-                </>
-              ) : (
-                <></>
-              )}
-            </Typography>
-          ))}
-        </div>
-        <Button
-          variant="outlined"
-          onClick={() => setShowAddDialog(true)}
-          sx={{ marginTop: "10px" }}
-        >
-          新增
-        </Button>
+                      <div>{todo.title}</div>
+                      <div style={dueColor(todo.due)}>Due Date: {todo.due}</div>
+                    </Typography>
+                  </AccordionSummary>
+                  <AccordionDetails>
+                    <Grid container spacing={2}>
+                      <Grid item xs={6}>
+                        <div>{todo.content}</div>
+                      </Grid>
+                      <Grid item xs={6}>
+                        <div style={styleAlignItems}>
+                          <PlaceIcon sx={{ marginRight: "10px" }} />{" "}
+                          {todo.place}
+                        </div>
+                        <div style={styleAlignItems}>
+                          <FlagIcon sx={{ marginRight: "10px" }} /> {todo.flag}
+                        </div>
+                        <div style={styleAlignItems}>
+                          <ListIcon sx={{ marginRight: "10px" }} />{" "}
+                          {todo.priority}
+                        </div>
+                      </Grid>
+                    </Grid>
+                  </AccordionDetails>
+                </Accordion>
+                {showButtons[index] ? (
+                  <>
+                    <Tooltip title="Edit" placement="top" arrow>
+                      <IconButton
+                        onClick={() => setEditItem(todo)}
+                        sx={{ marginLeft: "10px" }}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                    </Tooltip>
+                    <Tooltip title="Delete" placement="top" arrow>
+                      <IconButton onClick={() => setDeleteItemId(todo.id)}>
+                        <DeleteIcon />
+                      </IconButton>
+                    </Tooltip>
+                  </>
+                ) : (
+                  <></>
+                )}
+              </Typography>
+            ))}
+          </div>
+          <Button
+            variant="outlined"
+            onClick={() => setShowAddDialog(true)}
+            sx={{ marginTop: "10px" }}
+          >
+            新增
+          </Button>
+        </Paper>
       </Container>
       <TodoAddDialog
         show={showAddDialog}
