@@ -7,7 +7,8 @@ from .serializers import TodoSerializer
 class TodoListCreateAPIView(generics.ListCreateAPIView):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
-    filter_backends = [filters.OrderingFilter]
+    filter_backends = [filters.OrderingFilter, filters.SearchFilter]
+    search_fields = ['title', 'content', 'due', 'place', 'flag', 'priority']
 
 todo_list_create_view = TodoListCreateAPIView.as_view()
 

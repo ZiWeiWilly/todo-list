@@ -52,16 +52,20 @@ export const TodoList = () => {
   const [editItem, setEditItem] = useState<Todo | null>(null);
   const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
   const [order, setOrder] = useState("id");
+  const [keyword, setKeyword] = useState("");
 
   const handleFetchTodoItem = () => {
-    fetch(`http://127.0.0.1:8000/api/todos/?ordering=${order}`, {
-      method: "GET",
-      headers: new Headers({
-        Accept: "application/json",
-        "Content-Type": "application/json",
-      }),
-      redirect: "follow",
-    })
+    fetch(
+      `http://127.0.0.1:8000/api/todos/?ordering=${order}&search=${keyword}`,
+      {
+        method: "GET",
+        headers: new Headers({
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        }),
+        redirect: "follow",
+      }
+    )
       .then((response) => response.json())
       .then((result) => {
         setTodoItems(result);
@@ -132,7 +136,7 @@ export const TodoList = () => {
 
   useEffect(() => {
     handleFetchTodoItem();
-  }, [editItem, deleteItemId, order]);
+  }, [editItem, deleteItemId, order, keyword]);
 
   return (
     <>
@@ -151,12 +155,16 @@ export const TodoList = () => {
             value={order}
             select
             onChange={handleOrderChange}
-            sx={{ marginBottom: "5px" }}
+            sx={{ margin: "0 5px 5px 0" }}
           >
             {sortBy.map((o) => (
               <MenuItem value={o.value}>{o.text}</MenuItem>
             ))}
           </TextField>
+          <TextField
+            label="關鍵字搜尋"
+            onChange={(e) => setKeyword(e.target.value)}
+          />
           <div
             style={{
               minHeight: "60px",
