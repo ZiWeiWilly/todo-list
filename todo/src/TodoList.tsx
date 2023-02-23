@@ -1,34 +1,16 @@
-import { ChangeEvent, CSSProperties, useEffect, useState } from "react";
+import { ChangeEvent, useEffect, useState } from "react";
 import Container from "@mui/material/Container";
 
 import { Todo } from "./todo.types";
 import { TodoAddDialog } from "./TodoAddDialog";
-import Accordion from "@mui/material/Accordion";
-import AccordionSummary from "@mui/material/AccordionSummary";
-import AccordionDetails from "@mui/material/AccordionDetails";
-import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
-import Typography from "@mui/material/Typography";
-import Grid from "@mui/material/Grid";
-import PlaceIcon from "@mui/icons-material/Place";
-import FlagIcon from "@mui/icons-material/Flag";
-import ListIcon from "@mui/icons-material/List";
 import IconButton from "@mui/material/IconButton";
-import EditIcon from "@mui/icons-material/Edit";
-import DeleteIcon from "@mui/icons-material/Delete";
 import Button from "@mui/material/Button";
 import RefreshIcon from "@mui/icons-material/Refresh";
-import { TodoEditDialog } from "./TodoEditDialog";
-import { TodoDeleteDialog } from "./TodoDeleteDialog";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
 import TextField from "@mui/material/TextField";
 import Paper from "@mui/material/Paper";
-
-const styleAlignItems: CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  marginBottom: "10px",
-};
+import { TodoItem } from "./TodoItem";
 
 const sortBy = [
   {
@@ -47,10 +29,7 @@ const sortBy = [
 
 export const TodoList = () => {
   const [todoItems, setTodoItems] = useState<Todo[]>([] as Todo[]);
-  const [showButtons, setShowButtons] = useState<Boolean[]>([] as Boolean[]);
   const [showAddDialog, setShowAddDialog] = useState(false);
-  const [editItem, setEditItem] = useState<Todo | null>(null);
-  const [deleteItemId, setDeleteItemId] = useState<number | null>(null);
   const [order, setOrder] = useState("id");
   const [keyword, setKeyword] = useState("");
 
@@ -69,74 +48,17 @@ export const TodoList = () => {
       .then((response) => response.json())
       .then((result) => {
         setTodoItems(result);
-        setShowButtons(Array(result.length).fill(false));
       })
       .catch((error) => console.log("error", error));
-  };
-
-  const handleHover = (isHover: boolean, index: number) => {
-    let curShowButtons = showButtons.slice();
-    curShowButtons[index] = isHover;
-    setShowButtons(curShowButtons);
   };
 
   const handleOrderChange = (event: ChangeEvent<HTMLInputElement>) => {
     setOrder(event.target.value);
     handleFetchTodoItem();
   };
-
-  const dueDetermine = (due: string): string => {
-    const dateDue = new Date(due);
-    const dateNow = new Date();
-
-    if (dateDue.getFullYear() < dateNow.getFullYear()) {
-      return "Over Due";
-    } else if (dateDue.getFullYear() > dateNow.getFullYear()) {
-      return "Not Due";
-    } else {
-      if (dateDue.getDate() === dateNow.getDate()) {
-        return "On Due";
-      } else if (dateDue.getDate() < dateNow.getDate()) {
-        return "Over Due";
-      } else {
-        return "Not Due";
-      }
-    }
-  };
-
-  const accordionBackground = (due: string): CSSProperties => {
-    switch (dueDetermine(due)) {
-      case "On Due":
-        return {
-          backgroundColor: "#fff4e5",
-        };
-      case "Over Due":
-        return {
-          backgroundColor: "#fdeded",
-        };
-      default:
-        return {};
-    }
-  };
-
-  const dueColor = (due: string): CSSProperties => {
-    switch (dueDetermine(due)) {
-      case "On Due":
-        return {
-          color: "#ed6c02",
-        };
-      case "Over Due":
-        return {
-          color: "#d32f2f",
-        };
-      default:
-        return {};
-    }
-  };
-
   useEffect(() => {
     handleFetchTodoItem();
-  }, [editItem, deleteItemId, order, keyword]);
+  }, [order, keyword]);
 
   return (
     <>
@@ -174,72 +96,8 @@ export const TodoList = () => {
               padding: "15px",
             }}
           >
-            {todoItems.map((todo, index) => (
-              <Typography
-                key={index}
-                onMouseEnter={() => handleHover(true, index)}
-                onMouseLeave={() => handleHover(false, index)}
-                display="flex"
-                alignItems="center"
-              >
-                <Accordion
-                  style={accordionBackground(todo.due)}
-                  sx={{
-                    flex: "1",
-                    marginBottom: "5px !important",
-                  }}
-                >
-                  <AccordionSummary expandIcon={<ExpandMoreIcon />}>
-                    <Typography
-                      display="flex"
-                      justifyContent="space-between"
-                      width="100%"
-                    >
-                      <div>{todo.title}</div>
-                      <div style={dueColor(todo.due)}>Due Date: {todo.due}</div>
-                    </Typography>
-                  </AccordionSummary>
-                  <AccordionDetails>
-                    <Grid container spacing={2}>
-                      <Grid item xs={6}>
-                        <div>{todo.content}</div>
-                      </Grid>
-                      <Grid item xs={6}>
-                        <div style={styleAlignItems}>
-                          <PlaceIcon sx={{ marginRight: "10px" }} />{" "}
-                          {todo.place}
-                        </div>
-                        <div style={styleAlignItems}>
-                          <FlagIcon sx={{ marginRight: "10px" }} /> {todo.flag}
-                        </div>
-                        <div style={styleAlignItems}>
-                          <ListIcon sx={{ marginRight: "10px" }} />{" "}
-                          {todo.priority}
-                        </div>
-                      </Grid>
-                    </Grid>
-                  </AccordionDetails>
-                </Accordion>
-                {showButtons[index] ? (
-                  <>
-                    <Tooltip title="Edit" placement="top" arrow>
-                      <IconButton
-                        onClick={() => setEditItem(todo)}
-                        sx={{ marginLeft: "10px" }}
-                      >
-                        <EditIcon />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete" placement="top" arrow>
-                      <IconButton onClick={() => setDeleteItemId(todo.id)}>
-                        <DeleteIcon />
-                      </IconButton>
-                    </Tooltip>
-                  </>
-                ) : (
-                  <></>
-                )}
-              </Typography>
+            {todoItems.map((item) => (
+              <TodoItem key={item.id} item={item} refresh={handleFetchTodoItem} />
             ))}
           </div>
           <Button
@@ -254,16 +112,6 @@ export const TodoList = () => {
       <TodoAddDialog
         show={showAddDialog}
         close={() => setShowAddDialog(false)}
-        refresh={handleFetchTodoItem}
-      />
-      <TodoEditDialog
-        editTodoItem={editItem}
-        close={() => setEditItem(null)}
-        refresh={handleFetchTodoItem}
-      />
-      <TodoDeleteDialog
-        itemId={deleteItemId}
-        close={() => setDeleteItemId(null)}
         refresh={handleFetchTodoItem}
       />
     </>

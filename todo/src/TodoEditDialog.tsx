@@ -12,13 +12,14 @@ import DialogActions from "@mui/material/DialogActions";
 const priorityOption = ["Low", "Middle", "High"];
 
 type TodoEditDialogProps = {
-  editTodoItem: Todo | null;
+  editTodoItem: Todo;
   refresh: () => void;
+  show: boolean;
   close: () => void;
 };
 
 export const TodoEditDialog = (props: TodoEditDialogProps) => {
-  if (props.editTodoItem === null) {
+  if (!props.show) {
     return null
   }
 

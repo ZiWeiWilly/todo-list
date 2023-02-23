@@ -6,13 +6,14 @@ import DialogContentText from "@mui/material/DialogContentText";
 import Button from "@mui/material/Button";
 
 type TodoDelteDialog = {
-  itemId: number | null;
+  itemId: number;
+  show: boolean;
   close: () => void;
   refresh: () => void;
 };
 
 export const TodoDeleteDialog = (props: TodoDelteDialog) => {
-  if (props.itemId === null) {
+  if (!props.show) {
     return null
   }
 
